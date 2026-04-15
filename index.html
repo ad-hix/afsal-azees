@@ -10,18 +10,88 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-<!-- Leaflet Map -->
+<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body {font-family: Arial; background:#f5f5f5;}
-header {background:#c62828;color:white;padding:15px;text-align:center;font-size:22px;}
-.card {background:white;padding:20px;margin:20px auto;max-width:420px;border-radius:10px;}
-input,select {width:100%;padding:10px;margin-top:10px;}
-button {width:100%;padding:10px;margin-top:10px;background:#c62828;color:white;border:none;border-radius:5px;}
-#map {height:300px;margin-top:10px;border-radius:10px;}
-.result {background:#ffeaea;padding:10px;margin-top:10px;border-radius:8px;}
+body {
+font-family: Arial;
+background: linear-gradient(135deg,#ffeaea,#fff);
+cursor: url('https://cdn-icons-png.flaticon.com/32/833/833472.png'), auto;
+}
+
+/* HEADER */
+header {
+background: linear-gradient(135deg,#c62828,#ff5252);
+color:white;
+padding:20px;
+text-align:center;
+font-size:24px;
+animation: fadeIn 1s;
+}
+
+/* CARD */
+.card {
+background:white;
+padding:20px;
+margin:20px auto;
+max-width:420px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+animation: slideUp 0.8s;
+}
+
+input,select {
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* BUTTON */
+button {
+width:100%;
+padding:12px;
+margin-top:10px;
+background:linear-gradient(135deg,#c62828,#ff5252);
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover {
+transform: scale(1.05);
+}
+
+/* MAP */
+#map {
+height:300px;
+margin-top:10px;
+border-radius:10px;
+}
+
+/* RESULT */
+.result {
+background:#ffeaea;
+padding:10px;
+margin-top:10px;
+border-radius:10px;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+from {opacity:0;}
+to {opacity:1;}
+}
+
+@keyframes slideUp {
+from {transform:translateY(50px);opacity:0;}
+to {transform:translateY(0);opacity:1;}
+}
 </style>
 </head>
 
@@ -29,7 +99,6 @@ button {width:100%;padding:10px;margin-top:10px;background:#c62828;color:white;b
 
 <header>🩸 Smart Blood Donation System</header>
 
-<!-- LOGIN -->
 <div class="card">
 <h2>Login / Signup</h2>
 <input id="email" placeholder="Email">
@@ -38,7 +107,6 @@ button {width:100%;padding:10px;margin-top:10px;background:#c62828;color:white;b
 <button onclick="login()">Login</button>
 </div>
 
-<!-- REGISTER -->
 <div class="card">
 <h2>Register Donor</h2>
 <input id="name" placeholder="Name">
@@ -50,13 +118,12 @@ button {width:100%;padding:10px;margin-top:10px;background:#c62828;color:white;b
 <input id="location" placeholder="Location">
 <input id="contact" placeholder="Contact">
 
-<button onclick="getLocation()">📍 Get My Location</button>
+<button onclick="getLocation()">📍 Get Location</button>
 <button onclick="registerDonor()">Register</button>
 
 <div id="map"></div>
 </div>
 
-<!-- SEARCH -->
 <div class="card">
 <h2>Find Blood</h2>
 <select id="searchBlood">
@@ -69,7 +136,7 @@ button {width:100%;padding:10px;margin-top:10px;background:#c62828;color:white;b
 </div>
 
 <script>
-/* 🔥 ADD YOUR FIREBASE CONFIG */
+/* 🔥 PUT YOUR FIREBASE CONFIG */
 const firebaseConfig = {
 apiKey: "YOUR_API_KEY",
 authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -84,30 +151,39 @@ const db = firebase.database();
 
 /* AUTH */
 function signup(){
-let email = document.getElementById("email").value;
-let password = document.getElementById("password").value;
-
-if(!email || !password){
-alert("Enter email & password");
-return;
-}
+let email = emailInput();
+let password = passInput();
 
 auth.createUserWithEmailAndPassword(email,password)
-.then(()=>alert("Signup Success"))
+.then(()=>alert("✅ Signup Success"))
 .catch(e=>alert(e.message));
 }
 
 function login(){
-let email = document.getElementById("email").value;
-let password = document.getElementById("password").value;
+let email = emailInput();
+let password = passInput();
 
 auth.signInWithEmailAndPassword(email,password)
-.then(()=>alert("Login Success"))
+.then(()=>alert("✅ Login Success"))
 .catch(e=>alert(e.message));
+}
+
+function emailInput(){
+return document.getElementById("email").value;
+}
+function passInput(){
+return document.getElementById("password").value;
 }
 
 /* REGISTER */
 function registerDonor(){
+
+let user = auth.currentUser;
+
+if(!user){
+alert("⚠️ Please login first");
+return;
+}
 
 let name = document.getElementById("name").value;
 let blood = document.getElementById("blood").value;
@@ -122,22 +198,23 @@ return;
 let id = Date.now();
 
 db.ref("donors/" + id).set({
-name: name,
-blood: blood,
-location: location,
-contact: contact
+name, blood, location, contact, user: user.email
 })
-.then(()=>alert("✅ Registered Successfully"))
-.catch(err=>alert(err.message));
+.then(()=>{
+alert("🎉 Donor Registered!");
+})
+.catch(err=>{
+alert("❌ Error: " + err.message);
+});
+
 }
 
 /* SEARCH */
 function searchDonor(){
-
 let group = document.getElementById("searchBlood").value;
 let results = document.getElementById("results");
 
-results.innerHTML = "Loading...";
+results.innerHTML="Loading...";
 
 db.ref("donors").once("value", snap=>{
 results.innerHTML="";
@@ -160,66 +237,34 @@ if(results.innerHTML===""){
 results.innerHTML="No donors found";
 }
 });
-
 }
 
-/* GPS + MAP */
+/* GPS */
 let map;
 
 function getLocation(){
+navigator.geolocation.getCurrentPosition(async pos=>{
+let lat = pos.coords.latitude;
+let lon = pos.coords.longitude;
 
-if(!navigator.geolocation){
-alert("Geolocation not supported");
-return;
-}
+document.getElementById("location").value = lat+","+lon;
 
-navigator.geolocation.getCurrentPosition(
-async function(position){
-
-let lat = position.coords.latitude;
-let lon = position.coords.longitude;
-
-/* Show coordinates first */
-document.getElementById("location").value = lat + ", " + lon;
-
-/* Convert to address */
-try{
-let res = await fetch(
-`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-);
-let data = await res.json();
-
-let city = data.address.city || data.address.town || data.address.village || "";
-let state = data.address.state || "";
-let country = data.address.country || "";
-
-document.getElementById("location").value =
-city + ", " + state + ", " + country;
-
-}catch{
-console.log("Address fetch failed");
-}
-
-/* Load map */
 if(!map){
 map = L.map('map').setView([lat, lon], 13);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
-.addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 }
 
 map.setView([lat, lon], 13);
+L.marker([lat, lon]).addTo(map);
 
-L.marker([lat, lon]).addTo(map)
-.bindPopup("📍 You are here")
-.openPopup();
-
-},
-function(error){
-alert("❌ Location permission denied");
-}
-);
-
+/* Address */
+try{
+let res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+let data = await res.json();
+document.getElementById("location").value =
+(data.address.city || "") + ", " + (data.address.state || "");
+}catch{}
+});
 }
 </script>
 
