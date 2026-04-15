@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Blood Donation System</title>
 
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+}
+
+header {
+    background: #c62828;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 24px;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    background: #b71c1c;
+}
+
+nav button {
+    background: none;
+    border: none;
+    color: white;
+    padding: 15px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+nav button:hover {
+    background: #8e0000;
+}
+
+.container {
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    margin: 10px auto;
+    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+button.submit {
+    background: #c62828;
+    color: white;
+    border: none;
+}
+
+button.submit:hover {
+    background: #8e0000;
+}
+
+.hidden {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<header>🩸 Smart Blood Donation System</header>
+
+<nav>
+    <button onclick="showSection('home')">Home</button>
+    <button onclick="showSection('register')">Register</button>
+    <button onclick="showSection('search')">Find Blood</button>
+</nav>
+
+<div class="container">
+
+<!-- HOME -->
+<div id="home">
+    <div class="card">
+        <h2>Welcome</h2>
+        <p>This platform connects blood donors and recipients quickly during emergencies.</p>
+    </div>
+</div>
+
+<!-- REGISTER -->
+<div id="register" class="hidden">
+    <div class="card">
+        <h2>Donor Registration</h2>
+        <input type="text" id="name" placeholder="Full Name">
+        <select id="blood">
+            <option value="">Select Blood Group</option>
+            <option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option>
+            <option>O+</option><option>O-</option>
+            <option>AB+</option><option>AB-</option>
+        </select>
+        <input type="text" id="location" placeholder="Location">
+        <input type="text" id="contact" placeholder="Contact Number">
+        <button class="submit" onclick="registerDonor()">Register</button>
+    </div>
+</div>
+
+<!-- SEARCH -->
+<div id="search" class="hidden">
+    <div class="card">
+        <h2>Find Blood</h2>
+        <select id="searchBlood">
+            <option value="">Select Blood Group</option>
+            <option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option>
+            <option>O+</option><option>O-</option>
+            <option>AB+</option><option>AB-</option>
+        </select>
+        <button class="submit" onclick="searchDonor()">Search</button>
+        <div id="results"></div>
+    </div>
+</div>
+
+</div>
+
+<script>
+let donors = [];
+
+function showSection(section) {
+    document.getElementById('home').classList.add('hidden');
+    document.getElementById('register').classList.add('hidden');
+    document.getElementById('search').classList.add('hidden');
+
+    document.getElementById(section).classList.remove('hidden');
+}
+
+function registerDonor() {
+    let name = document.getElementById('name').value;
+    let blood = document.getElementById('blood').value;
+    let location = document.getElementById('location').value;
+    let contact = document.getElementById('contact').value;
+
+    if (!name || !blood || !location || !contact) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    donors.push({ name, blood, location, contact });
+
+    alert("Donor Registered Successfully!");
+    document.getElementById('name').value = "";
+    document.getElementById('blood').value = "";
+    document.getElementById('location').value = "";
+    document.getElementById('contact').value = "";
+}
+
+function searchDonor() {
+    let blood = document.getElementById('searchBlood').value;
+    let results = document.getElementById('results');
+
+    results.innerHTML = "";
+
+    let filtered = donors.filter(d => d.blood === blood);
+
+    if (filtered.length === 0) {
+        results.innerHTML = "<p>No donors found</p>";
+        return;
+    }
+
+    filtered.forEach(d => {
+        results.innerHTML += `
+            <p><strong>${d.name}</strong><br>
+            Blood: ${d.blood}<br>
+            Location: ${d.location}<br>
+            Contact: ${d.contact}</p><hr>`;
+    });
+}
+</script>
+
+</body>
+</html>
