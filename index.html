@@ -3,23 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Blood Donation System</title>
+<title>Smart Blood Donation</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
-body {
+* {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f5f7fa;
+    padding: 0;
+    box-sizing: border-box;
 }
 
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f4f6f9;
+}
+
+/* HEADER */
 header {
-    background: #c62828;
+    background: linear-gradient(135deg, #c62828, #e53935);
     color: white;
-    padding: 15px;
+    padding: 20px;
     text-align: center;
-    font-size: 24px;
+    font-size: 28px;
+    letter-spacing: 1px;
+    animation: fadeDown 1s ease;
 }
 
+@keyframes fadeDown {
+    from {opacity:0; transform: translateY(-30px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+/* NAVBAR */
 nav {
     display: flex;
     justify-content: center;
@@ -30,46 +46,93 @@ nav button {
     background: none;
     border: none;
     color: white;
-    padding: 15px;
+    padding: 15px 20px;
     cursor: pointer;
     font-size: 16px;
+    transition: 0.3s;
 }
 
 nav button:hover {
-    background: #8e0000;
+    background: #7f0000;
 }
 
+/* HERO */
+.hero {
+    background: url('https://images.unsplash.com/photo-1584515933487-779824d29309') no-repeat center/cover;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+}
+
+.hero h1 {
+    background: rgba(0,0,0,0.5);
+    padding: 15px 25px;
+    border-radius: 10px;
+    animation: fadeUp 1.5s ease;
+}
+
+@keyframes fadeUp {
+    from {opacity:0; transform: translateY(40px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+/* CONTAINER */
 .container {
     padding: 20px;
 }
 
+/* CARD */
 .card {
     background: white;
-    padding: 20px;
-    margin: 10px auto;
-    max-width: 400px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 25px;
+    margin: 20px auto;
+    max-width: 420px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    animation: fadeUp 0.8s ease;
 }
 
-input, select, button {
+/* INPUTS */
+input, select {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
 }
 
+/* BUTTON */
 button.submit {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
     background: #c62828;
     color: white;
     border: none;
+    border-radius: 8px;
+    transition: 0.3s;
 }
 
 button.submit:hover {
     background: #8e0000;
+    transform: scale(1.05);
 }
 
+/* HIDDEN */
 .hidden {
     display: none;
+}
+
+/* RESULT CARD */
+.result {
+    background: #ffeaea;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    animation: fadeUp 0.5s ease;
 }
 </style>
 </head>
@@ -84,20 +147,24 @@ button.submit:hover {
     <button onclick="showSection('search')">Find Blood</button>
 </nav>
 
+<div class="hero">
+    <h1>Save Lives with a Drop of Blood ❤️</h1>
+</div>
+
 <div class="container">
 
 <!-- HOME -->
 <div id="home">
     <div class="card">
         <h2>Welcome</h2>
-        <p>This platform connects blood donors and recipients quickly during emergencies.</p>
+        <p>This platform connects donors and patients instantly during emergencies.</p>
     </div>
 </div>
 
 <!-- REGISTER -->
 <div id="register" class="hidden">
     <div class="card">
-        <h2>Donor Registration</h2>
+        <h2>Become a Donor</h2>
         <input type="text" id="name" placeholder="Full Name">
         <select id="blood">
             <option value="">Select Blood Group</option>
@@ -154,7 +221,8 @@ function registerDonor() {
 
     donors.push({ name, blood, location, contact });
 
-    alert("Donor Registered Successfully!");
+    alert("✅ Donor Registered Successfully!");
+    
     document.getElementById('name').value = "";
     document.getElementById('blood').value = "";
     document.getElementById('location').value = "";
@@ -176,10 +244,12 @@ function searchDonor() {
 
     filtered.forEach(d => {
         results.innerHTML += `
-            <p><strong>${d.name}</strong><br>
-            Blood: ${d.blood}<br>
-            Location: ${d.location}<br>
-            Contact: ${d.contact}</p><hr>`;
+            <div class="result">
+                <strong>${d.name}</strong><br>
+                🩸 ${d.blood}<br>
+                📍 ${d.location}<br>
+                📞 ${d.contact}
+            </div>`;
     });
 }
 </script>
