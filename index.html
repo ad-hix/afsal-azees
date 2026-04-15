@@ -5,112 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smart Blood Donation</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-<!-- Leaflet -->
+<!-- Leaflet Map -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-font-family:'Poppins',sans-serif;
-background:linear-gradient(135deg,#eef2f7,#dfe9f3);
-}
-
-/* HEADER */
-header{
-background:linear-gradient(135deg,#c62828,#ff5252);
-color:white;
-padding:20px;
-text-align:center;
-font-size:26px;
-}
-
-/* NAV */
-nav{
-display:flex;
-justify-content:center;
-background:#b71c1c;
-}
-
-nav button{
-background:none;
-border:none;
-color:white;
-padding:15px;
-cursor:pointer;
-}
-
-/* HERO */
-.hero{
-background:url('https://images.unsplash.com/photo-1615461066841-6116e61058f4') no-repeat center/cover;
-height:280px;
-display:flex;
-align-items:center;
-justify-content:center;
-color:white;
-}
-
-.hero h1{
-background:rgba(0,0,0,0.6);
-padding:20px;
-border-radius:10px;
-}
-
-/* CARD */
-.card{
-background:rgba(255,255,255,0.85);
-backdrop-filter:blur(10px);
-padding:25px;
-margin:20px auto;
-max-width:420px;
-border-radius:15px;
-box-shadow:0 10px 25px rgba(0,0,0,0.2);
-}
-
-/* INPUT */
-input,select{
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:8px;
-border:1px solid #ccc;
-}
-
-/* BUTTON */
-button.submit{
-width:100%;
-padding:12px;
-margin-top:10px;
-background:linear-gradient(135deg,#c62828,#ff5252);
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-/* MAP */
-#map{
-height:300px;
-margin-top:10px;
-border-radius:10px;
-}
-
-/* RESULT */
-.result{
-background:#ffeaea;
-padding:10px;
-margin-top:10px;
-border-radius:10px;
-}
-
-.hidden{display:none;}
+body {font-family: Arial; background:#f5f5f5;}
+header {background:#c62828;color:white;padding:15px;text-align:center;font-size:22px;}
+.card {background:white;padding:20px;margin:20px auto;max-width:420px;border-radius:10px;}
+input,select {width:100%;padding:10px;margin-top:10px;}
+button {width:100%;padding:10px;margin-top:10px;background:#c62828;color:white;border:none;border-radius:5px;}
+#map {height:300px;margin-top:10px;border-radius:10px;}
+.result {background:#ffeaea;padding:10px;margin-top:10px;border-radius:8px;}
 </style>
 </head>
 
@@ -118,41 +29,18 @@ border-radius:10px;
 
 <header>🩸 Smart Blood Donation System</header>
 
-<nav>
-<button onclick="showSection('login')">Login</button>
-<button onclick="showSection('home')">Home</button>
-<button onclick="showSection('register')">Register</button>
-<button onclick="showSection('search')">Find Blood</button>
-<button onclick="showSection('admin')">Admin</button>
-</nav>
-
-<div class="hero">
-<h1>Donate Blood ❤️ Save Lives</h1>
-</div>
-
 <!-- LOGIN -->
-<div id="login">
 <div class="card">
 <h2>Login / Signup</h2>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<button class="submit" onclick="signup()">Sign Up</button>
-<button class="submit" onclick="login()">Login</button>
-</div>
-</div>
-
-<!-- HOME -->
-<div id="home" class="hidden">
-<div class="card">
-<h2>Welcome</h2>
-<p>Smart system connecting donors instantly across India 🇮🇳</p>
-</div>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="signup()">Sign Up</button>
+<button onclick="login()">Login</button>
 </div>
 
 <!-- REGISTER -->
-<div id="register" class="hidden">
 <div class="card">
-<h2>Become Donor</h2>
+<h2>Register Donor</h2>
 <input id="name" placeholder="Name">
 <select id="blood">
 <option value="">Blood Group</option>
@@ -162,15 +50,13 @@ border-radius:10px;
 <input id="location" placeholder="Location">
 <input id="contact" placeholder="Contact">
 
-<button class="submit" onclick="getLocation()">📍 Use GPS (India)</button>
-<button class="submit" onclick="registerDonor()">Register</button>
+<button onclick="getLocation()">📍 Get My Location</button>
+<button onclick="registerDonor()">Register</button>
 
 <div id="map"></div>
 </div>
-</div>
 
 <!-- SEARCH -->
-<div id="search" class="hidden">
 <div class="card">
 <h2>Find Blood</h2>
 <select id="searchBlood">
@@ -178,25 +64,12 @@ border-radius:10px;
 <option>A+</option><option>B+</option><option>O+</option><option>AB+</option>
 <option>A-</option><option>B-</option><option>O-</option><option>AB-</option>
 </select>
-<button class="submit" onclick="searchDonor()">Search</button>
+<button onclick="searchDonor()">Search</button>
 <div id="results"></div>
 </div>
-</div>
-
-<!-- ADMIN -->
-<div id="admin" class="hidden">
-<div class="card">
-<h2>Admin Panel</h2>
-<button class="submit" onclick="loadAll()">Load Donors</button>
-<div id="adminData"></div>
-</div>
-</div>
-
-<!-- JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-/* Firebase Config */
+/* 🔥 ADD YOUR FIREBASE CONFIG */
 const firebaseConfig = {
 apiKey: "YOUR_API_KEY",
 authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -205,62 +78,75 @@ projectId: "YOUR_PROJECT",
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+
 const auth = firebase.auth();
-
-let map;
-
-/* NAVIGATION */
-function showSection(id){
-document.querySelectorAll("div[id]").forEach(d=>d.classList.add("hidden"));
-document.getElementById(id).classList.remove("hidden");
-}
+const db = firebase.database();
 
 /* AUTH */
 function signup(){
-auth.createUserWithEmailAndPassword(email.value,password.value)
+let email = document.getElementById("email").value;
+let password = document.getElementById("password").value;
+
+if(!email || !password){
+alert("Enter email & password");
+return;
+}
+
+auth.createUserWithEmailAndPassword(email,password)
 .then(()=>alert("Signup Success"))
 .catch(e=>alert(e.message));
 }
 
 function login(){
-auth.signInWithEmailAndPassword(email.value,password.value)
-.then(()=>{
-alert("Login Success");
-showSection("home");
-})
+let email = document.getElementById("email").value;
+let password = document.getElementById("password").value;
+
+auth.signInWithEmailAndPassword(email,password)
+.then(()=>alert("Login Success"))
 .catch(e=>alert(e.message));
 }
 
 /* REGISTER */
 function registerDonor(){
-if(!name.value||!blood.value||!location.value||!contact.value){
-alert("Fill all fields");return;
+
+let name = document.getElementById("name").value;
+let blood = document.getElementById("blood").value;
+let location = document.getElementById("location").value;
+let contact = document.getElementById("contact").value;
+
+if(!name || !blood || !location || !contact){
+alert("⚠️ Fill all fields");
+return;
 }
 
-let id=Date.now();
+let id = Date.now();
 
-db.ref("donors/"+id).set({
-name:name.value,
-blood:blood.value,
-location:location.value,
-contact:contact.value
-});
-
-alert("Saved to database!");
+db.ref("donors/" + id).set({
+name: name,
+blood: blood,
+location: location,
+contact: contact
+})
+.then(()=>alert("✅ Registered Successfully"))
+.catch(err=>alert(err.message));
 }
 
 /* SEARCH */
 function searchDonor(){
-results.innerHTML="Loading...";
 
-db.ref("donors").on("value",snap=>{
+let group = document.getElementById("searchBlood").value;
+let results = document.getElementById("results");
+
+results.innerHTML = "Loading...";
+
+db.ref("donors").once("value", snap=>{
 results.innerHTML="";
 
 snap.forEach(child=>{
-let d=child.val();
-if(d.blood===searchBlood.value){
-results.innerHTML+=`
+let d = child.val();
+
+if(d.blood === group){
+results.innerHTML += `
 <div class="result">
 <strong>${d.name}</strong><br>
 🩸 ${d.blood}<br>
@@ -269,72 +155,71 @@ results.innerHTML+=`
 </div>`;
 }
 });
+
+if(results.innerHTML===""){
+results.innerHTML="No donors found";
+}
 });
+
 }
 
-/* ADMIN */
-function loadAll(){
-adminData.innerHTML="Loading...";
+/* GPS + MAP */
+let map;
 
-db.ref("donors").once("value",snap=>{
-adminData.innerHTML="";
-
-snap.forEach(child=>{
-let d=child.val();
-adminData.innerHTML+=`
-<div class="result">
-${d.name} - ${d.blood}
-</div>`;
-});
-});
-}
-
-/* 🇮🇳 INDIA GPS + MAP */
 function getLocation(){
-if(navigator.geolocation){
 
-navigator.geolocation.getCurrentPosition(async pos=>{
-let lat = pos.coords.latitude;
-let lon = pos.coords.longitude;
+if(!navigator.geolocation){
+alert("Geolocation not supported");
+return;
+}
 
-/* India centered map */
+navigator.geolocation.getCurrentPosition(
+async function(position){
+
+let lat = position.coords.latitude;
+let lon = position.coords.longitude;
+
+/* Show coordinates first */
+document.getElementById("location").value = lat + ", " + lon;
+
+/* Convert to address */
+try{
+let res = await fetch(
+`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+);
+let data = await res.json();
+
+let city = data.address.city || data.address.town || data.address.village || "";
+let state = data.address.state || "";
+let country = data.address.country || "";
+
+document.getElementById("location").value =
+city + ", " + state + ", " + country;
+
+}catch{
+console.log("Address fetch failed");
+}
+
+/* Load map */
 if(!map){
-map = L.map('map').setView([20.5937, 78.9629], 5);
+map = L.map('map').setView([lat, lon], 13);
 
-map.setMaxBounds([
-[6.0, 68.0],
-[37.0, 97.0]
-]);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+.addTo(map);
 }
 
 map.setView([lat, lon], 13);
 
 L.marker([lat, lon]).addTo(map)
-.bindPopup("📍 You are here (India)").openPopup();
+.bindPopup("📍 You are here")
+.openPopup();
 
-/* Convert to address */
-try{
-let res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
-let data = await res.json();
-
-let addr = data.address;
-let city = addr.city || addr.town || addr.village || "";
-let state = addr.state || "";
-let country = addr.country || "";
-
-location.value = city + ", " + state + ", " + country;
-
-}catch{
-location.value = lat + "," + lon;
+},
+function(error){
+alert("❌ Location permission denied");
 }
+);
 
-});
-
-}else{
-alert("GPS not supported");
-}
 }
 </script>
 
